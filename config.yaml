@@ -1,0 +1,26 @@
+# 图像切片配置文件
+
+# 切片参数
+tile_size: 512          # 切片大小（像素）
+overlap: 64             # 重叠部分（像素）
+stride: 448             # 滑动步长（自动计算：tile_size - overlap）
+
+# 放大倍数
+target_magnification: 20.0  # 目标放大倍数（20x）
+
+# 背景过滤参数
+background_threshold: 0.8   # 灰度阈值（0-1），高于此值认为是背景
+min_tissue_ratio: 0.1       # 最小组织占比，低于此值的切片会被丢弃
+
+# 输出设置
+output_base_dir: "output/tiles"  # 输出基础目录
+save_metadata: true              # 是否保存元数据
+create_preview: false            # 是否创建预览图（可选功能）
+
+# 批量处理
+input_dir: "data"                # 输入目录
+file_extensions:                 # 支持的文件格式
+  - ".ndpi"
+  - ".svs"
+  - ".tiff"
+  - ".tif"
