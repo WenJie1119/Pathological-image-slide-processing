@@ -426,7 +426,10 @@ class TileReviewer:
 
         # 绑定事件
         self.canvas.bind('<Configure>', self._on_canvas_configure)
-        self.canvas.bind_all('<MouseWheel>', self._on_mousewheel)
+        # 跨平台鼠标滚轮绑定
+        self.canvas.bind_all('<MouseWheel>', self._on_mousewheel)  # Windows/macOS
+        self.canvas.bind_all('<Button-4>', self._on_mousewheel)    # Linux 向上
+        self.canvas.bind_all('<Button-5>', self._on_mousewheel)    # Linux 向下
 
         # 框选
         self.canvas.bind('<ButtonPress-1>', self._on_drag_start)
@@ -468,8 +471,15 @@ class TileReviewer:
             self._update_visible_tiles()
 
     def _on_mousewheel(self, event):
-        """鼠标滚轮"""
-        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        """鼠标滚轮（跨平台兼容）"""
+        # Windows 和 macOS 使用 event.delta
+        # Linux 使用 Button-4 (向上) 和 Button-5 (向下)
+        if event.delta:
+            self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        elif event.num == 4:
+            self.canvas.yview_scroll(-1, "units")
+        elif event.num == 5:
+            self.canvas.yview_scroll(1, "units")
         self._update_visible_tiles()
 
     def _select_folder(self):
@@ -493,8 +503,10 @@ class TileReviewer:
         self.thumbnails.clear()
         self._clear_canvas()
 
-        # 查找PNG
-        self.tile_files = sorted(self.tiles_dir.glob("tile_*.png"))
+        # 查找切片文件（支持 PNG 和 JPEG）
+        png_files = list(self.tiles_dir.glob("tile_*.png"))
+        jpg_files = list(self.tiles_dir.glob("tile_*.jpg"))
+        self.tile_files = sorted(png_files + jpg_files, key=lambda x: x.name)
 
         if not self.tile_files:
             self.status_var.set("未找到切片文件")

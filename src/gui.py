@@ -160,7 +160,10 @@ class ImageSlicerGUI:
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
-        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+        # 跨平台鼠标滚轮绑定
+        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)  # Windows/macOS
+        self.canvas.bind_all("<Button-4>", self._on_mousewheel)    # Linux 向上
+        self.canvas.bind_all("<Button-5>", self._on_mousewheel)    # Linux 向下
 
         self.scrollbar.pack(side="right", fill="y")
         self.canvas.pack(side="left", fill="both", expand=True)
@@ -181,8 +184,15 @@ class ImageSlicerGUI:
         self._create_control_section(main_frame)
 
     def _on_mousewheel(self, event):
-        """鼠标滚轮滚动"""
-        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        """鼠标滚轮滚动（跨平台兼容）"""
+        # Windows 和 macOS 使用 event.delta
+        # Linux 使用 Button-4 (向上) 和 Button-5 (向下)
+        if event.delta:
+            self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        elif event.num == 4:
+            self.canvas.yview_scroll(-1, "units")
+        elif event.num == 5:
+            self.canvas.yview_scroll(1, "units")
 
     def _on_canvas_configure(self, event):
         """Canvas大小变化时调整内部框架宽度"""

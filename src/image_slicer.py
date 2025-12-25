@@ -16,8 +16,7 @@ import gc
 import numpy as np
 from pathlib import Path
 from typing import Tuple, Optional, List, Callable, Dict, Any, TYPE_CHECKING
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
+from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 
 if TYPE_CHECKING:
@@ -81,20 +80,6 @@ class BackgroundMethod(Enum):
     """背景检测方法枚举"""
     THRESHOLD = "threshold"  # 简单阈值
     OTSU = "otsu"  # Otsu 自动阈值
-
-
-@dataclass
-class TileInfo:
-    """切片信息数据类"""
-    filename: str
-    row: int
-    col: int
-    x: int
-    y: int
-    x_level0: int
-    y_level0: int
-    level: int
-    size: int
 
 
 class ImageSlicer:
