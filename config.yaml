@@ -1,26 +1,40 @@
-# 图像切片配置文件
+# 病理图像切片配置文件
+# Pathological Image Slice Processing Configuration
 
+# =====================
 # 切片参数
-tile_size: 512          # 切片大小（像素）
-overlap: 64             # 重叠部分（像素）
+# =====================
+tile_size: 512          # 切片大小（像素），可选值: 256, 512, 1024
+overlap: 64             # 重叠部分（像素），可选值: 0, 32, 64, 128, 256
 stride: 448             # 滑动步长（自动计算：tile_size - overlap）
 
+# =====================
 # 放大倍数
-target_magnification: 20.0  # 目标放大倍数（20x）
+# =====================
+target_magnification: 20.0  # 目标放大倍数（常用: 5x, 10x, 20x, 40x）
 
+# =====================
 # 背景过滤参数
+# =====================
 background_threshold: 0.8   # 灰度阈值（0-1），高于此值认为是背景
-min_tissue_ratio: 0.1       # 最小组织占比，低于此值的切片会被丢弃
+                            # 背景偏暗时可降低到 0.7，背景很白时可提高到 0.9
+min_tissue_ratio: 0.1       # 最小组织占比（0-1），低于此值的切片会被丢弃
+                            # 只要高质量切片时可提高到 0.2，保留更多边缘时可降低到 0.05
 
+# =====================
 # 输出设置
+# =====================
 output_base_dir: "output/tiles"  # 输出基础目录
-save_metadata: true              # 是否保存元数据
+save_metadata: true              # 是否保存元数据 JSON 文件
 create_preview: false            # 是否创建预览图（可选功能）
 
+# =====================
 # 批量处理
+# =====================
 input_dir: "data"                # 输入目录
 file_extensions:                 # 支持的文件格式
-  - ".ndpi"
-  - ".svs"
-  - ".tiff"
-  - ".tif"
+  - ".ndpi"                      # Hamamatsu NanoZoomer
+  - ".svs"                       # Aperio ScanScope
+  - ".mrxs"                      # 3DHISTECH Pannoramic
+  - ".tiff"                      # 通用 TIFF 格式
+  - ".tif"                       # 通用 TIF 格式

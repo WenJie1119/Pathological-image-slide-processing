@@ -5,6 +5,7 @@
 """
 
 import os
+import sys
 import numpy as np
 from pathlib import Path
 from typing import Tuple, Optional, List, TYPE_CHECKING
@@ -14,13 +15,47 @@ if TYPE_CHECKING:
 import json
 from tqdm import tqdm
 
+
+def _setup_openslide():
+    """设置 OpenSlide 库路径（Windows 需要）"""
+    if sys.platform == 'win32':
+        # 常见的 OpenSlide 安装路径
+        possible_paths = [
+            Path(os.environ.get('OPENSLIDE_PATH', '')) / 'bin',
+            Path('C:/openslide/bin'),
+            Path('C:/openslide-win64/bin'),
+            Path('C:/Program Files/openslide/bin'),
+            Path(__file__).parent.parent / 'openslide' / 'bin',
+            Path(__file__).parent.parent / 'openslide-win64' / 'bin',
+        ]
+
+        for path in possible_paths:
+            if path.exists():
+                # 添加到 DLL 搜索路径
+                dll_path = str(path.resolve())
+                if hasattr(os, 'add_dll_directory'):
+                    os.add_dll_directory(dll_path)
+                if dll_path not in os.environ.get('PATH', ''):
+                    os.environ['PATH'] = dll_path + os.pathsep + os.environ.get('PATH', '')
+                return True
+    return False
+
+
+# 尝试设置 OpenSlide
+_setup_openslide()
+
 try:
     import openslide
     from openslide import OpenSlide
     OPENSLIDE_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     OPENSLIDE_AVAILABLE = False
     print("Warning: openslide-python not installed. Install with: pip install openslide-python")
+except OSError as e:
+    OPENSLIDE_AVAILABLE = False
+    print(f"Warning: OpenSlide library not found. {e}")
+    print("Please download OpenSlide from https://openslide.org/download/")
+    print("Extract to C:\\openslide and add C:\\openslide\\bin to your PATH")
 
 try:
     from PIL import Image

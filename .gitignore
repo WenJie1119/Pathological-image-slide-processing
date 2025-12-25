@@ -42,11 +42,11 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# 数据文件（可选，取决于是否要版本控制数据）
-# data/*.ndpi
-# data/*.svs
-# data/*.tiff
-# data/*.tif
+# Claude Code 配置
+.claude/
+
+# 缩略图缓存
+.tile_cache.pkl
 
 # 临时文件
 nul
