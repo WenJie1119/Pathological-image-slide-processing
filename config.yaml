@@ -16,7 +16,8 @@ target_magnification: 20.0  # 目标放大倍数（常用: 5x, 10x, 20x, 40x）
 # =====================
 # 背景过滤参数
 # =====================
-background_threshold: 0.8   # 灰度阈值（0-1），高于此值认为是背景
+background_method: "otsu"   # 背景检测方法: "otsu"(自动) 或 "threshold"(固定阈值)
+background_threshold: 0.8   # 灰度阈值（0-1），仅在 method=threshold 时使用
                             # 背景偏暗时可降低到 0.7，背景很白时可提高到 0.9
 min_tissue_ratio: 0.1       # 最小组织占比（0-1），低于此值的切片会被丢弃
                             # 只要高质量切片时可提高到 0.2，保留更多边缘时可降低到 0.05
@@ -25,8 +26,16 @@ min_tissue_ratio: 0.1       # 最小组织占比（0-1），低于此值的切�
 # 输出设置
 # =====================
 output_base_dir: "output/tiles"  # 输出基础目录
+output_format: "png"             # 输出格式: "png"(无损) 或 "jpg"(更小)
+jpeg_quality: 95                 # JPEG 质量 (1-100)，仅在 format=jpg 时使用
 save_metadata: true              # 是否保存元数据 JSON 文件
 create_preview: false            # 是否创建预览图（可选功能）
+
+# =====================
+# 性能优化
+# =====================
+num_workers: 4                   # 并行保存的工作线程数（建议: CPU核心数）
+                                 # 设置为 1 禁用并行，设置为 8 最大化性能
 
 # =====================
 # 批量处理
